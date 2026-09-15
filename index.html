@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kalkulator UKM</title>
+    <style>
+      :root {
+        --bg: #f5f1ea;
+        --bg-2: #efe6db;
+        --panel: #fffdfb;
+        --panel-soft: #f8f4ef;
+        --primary: #1a1f2b;
+        --primary-dark: #111827;
+        --accent: #caa56a;
+        --accent-soft: #f6e7c8;
+        --success: #1b8f66;
+        --success-soft: #eafaf4;
+        --danger: #d9535c;
+        --text: #1b2330;
+        --text-soft: #5e697b;
+        --border: #e7dfd4;
+        --shadow: 0 20px 50px rgba(17, 24, 39, 0.10);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        -webkit-text-size-adjust: 100%;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Segoe UI", Arial, sans-serif;
+        background:
+          radial-gradient(circle at top left, rgba(202, 165, 106, 0.18), transparent 28%),
+          linear-gradient(180deg, #f9f6f2 0%, #f1eee8 100%);
+        color: var(--text);
+      }
+
+      .container {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 28px 14px 56px;
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 22px;
+      }
+
+      .header h1 {
+        margin: 0;
+        font-size: clamp(2.1rem, 5vw, 3.2rem);
+        color: var(--primary-dark);
+        letter-spacing: -0.06em;
+        font-weight: 800;
+      }
+
+      .header p {
+        display: none;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: 1.2fr 0.8fr;
+        gap: 20px;
+        align-items: start;
+      }
+
+      .card {
+        background: rgba(255, 255, 255, 0.92);
+        border: 1px solid rgba(231, 223, 212, 0.95);
+        border-radius: 24px;
+        box-shadow: var(--shadow);
+        backdrop-filter: blur(2px);
+      }
+
+      .form-card {
+        padding: 18px;
+      }
+
+      .field {
+        margin-bottom: 18px;
+      }
+
+      .field label {
+        display: block;
+        margin-bottom: 9px;
+        font-size: 0.94rem;
+        font-weight: 700;
+        color: var(--text);
+      }
+
+      .double-input {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+
+      .input-wrap {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: linear-gradient(180deg, #fffdfb 0%, #f8f3ee 100%);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 0 12px;
+        min-height: 56px;
+        box-shadow: inset 0 1px 0 rgba(255,255,255,0.7);
+      }
+
+      .input-wrap span {
+        color: var(--text-soft);
+        font-weight: 700;
+        font-size: 0.8rem;
+        white-space: nowrap;
+      }
+
+      .input-wrap input {
+        width: 100%;
+        border: none;
+        outline: none;
+        background: transparent;
+        color: var(--text);
+        font-size: 1rem;
+        padding: 14px 0;
+        min-height: 48px;
+        font-weight: 600;
+      }
+
+      .input-wrap input:focus {
+        outline: none;
+      }
+
+      .price-note {
+        display: block;
+        margin-top: 6px;
+        color: var(--text-soft);
+        font-size: 0.8rem;
+      }
+
+      .expense-list {
+        display: grid;
+        gap: 12px;
+      }
+
+      .expense-row {
+        display: grid;
+        grid-template-columns: 1.2fr 1fr auto;
+        gap: 10px;
+        align-items: center;
+      }
+
+      .remove-expense {
+        background: #ffe5e9;
+        color: var(--danger);
+        padding: 10px 12px;
+        border-radius: 12px;
+        min-width: 76px;
+        font-size: 0.9rem;
+      }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 20px;
+      }
+
+      button {
+        border: none;
+        border-radius: 16px;
+        padding: 14px 18px;
+        font-size: 1rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+      }
+
+      button:active {
+        transform: translateY(1px) scale(0.99);
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, var(--primary), #2a3345);
+        color: white;
+        box-shadow: 0 12px 22px rgba(17, 24, 39, 0.18);
+      }
+
+      .btn-secondary {
+        background: linear-gradient(180deg, #fbf8f5 0%, #f2ede8 100%);
+        color: var(--primary-dark);
+        border: 1px solid rgba(17, 24, 39, 0.08);
+      }
+
+      .result-card {
+        padding: 20px 18px;
+        background: linear-gradient(180deg, #ffffff 0%, #f9f6f2 100%);
+      }
+
+      .result-header {
+        margin-bottom: 16px;
+        padding: 14px 14px 12px;
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        background: linear-gradient(135deg, var(--accent-soft), #fffdfb);
+      }
+
+      .result-header h2 {
+        margin: 0 0 8px;
+        font-size: 1.5rem;
+        color: var(--primary-dark);
+        letter-spacing: -0.04em;
+      }
+
+      .result-header .date-badge {
+        display: inline-block;
+        font-size: 0.8rem;
+        color: var(--text-soft);
+        background: rgba(255, 255, 255, 0.8);
+        border: 1px solid rgba(17, 24, 39, 0.06);
+        border-radius: 999px;
+        padding: 6px 10px;
+        font-weight: 600;
+      }
+
+      .summary {
+        display: grid;
+        gap: 12px;
+        margin-top: 18px;
+      }
+
+      .summary-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        background: rgba(255, 255, 255, 0.9);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 12px 14px;
+        color: var(--text-soft);
+        font-size: 0.95rem;
+        box-shadow: 0 6px 16px rgba(17, 24, 39, 0.03);
+      }
+
+      .stock-list {
+        margin-top: 18px;
+        padding: 14px;
+        background: white;
+        border: 1px solid var(--border);
+        border-radius: 14px;
+      }
+
+      .stock-list h3 {
+        margin: 0 0 12px;
+        font-size: 1rem;
+        color: var(--primary-dark);
+      }
+
+      .stock-item,
+      .item-total-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+        padding: 8px 0;
+        border-bottom: 1px solid #edf2ff;
+        color: var(--text-soft);
+      }
+
+      .stock-item:last-child,
+      .item-total-row:last-child {
+        border-bottom: none;
+      }
+
+      .stock-item strong,
+      .item-total-row strong {
+        color: var(--text);
+      }
+
+      .item-total-box {
+        margin-top: 18px;
+        padding: 14px;
+        background: white;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+      }
+
+      .item-total-box h3 {
+        margin: 0 0 12px;
+        font-size: 1rem;
+        color: var(--primary-dark);
+      }
+
+      .result-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 20px;
+        flex-wrap: wrap;
+      }
+
+      .download-btn {
+        background: linear-gradient(135deg, #1b8f66, #126742);
+        color: white;
+        box-shadow: 0 12px 22px rgba(27, 143, 102, 0.18);
+      }
+
+      .summary-row strong {
+        color: var(--text);
+      }
+
+      .summary-row.total {
+        background: linear-gradient(180deg, var(--success-soft), #f9fffb);
+        border-color: rgba(27, 143, 102, 0.2);
+        color: var(--success);
+      }
+
+      .summary-row.total strong {
+        color: var(--success);
+        font-size: 1.3rem;
+      }
+
+      .expense-detail {
+        margin-top: 14px;
+        background: linear-gradient(180deg, #fffaf0 0%, #fff7e7 100%);
+        border: 1px solid rgba(202, 165, 106, 0.35);
+        border-radius: 12px;
+        padding: 12px 14px;
+      }
+
+      .expense-detail strong {
+        display: block;
+        margin-bottom: 6px;
+        color: #7a5811;
+      }
+
+      .expense-detail span {
+        color: #5d4a18;
+        line-height: 1.6;
+      }
+
+      .note {
+        margin-top: 22px;
+        padding: 14px 16px;
+        border-left: 4px solid var(--accent);
+        background: #fffaf0;
+        border-radius: 12px;
+        color: #6b5c1e;
+        line-height: 1.6;
+        font-size: 0.92rem;
+      }
+
+      @media (max-width: 800px) {
+        .grid {
+          grid-template-columns: 1fr;
+        }
+
+        .container {
+          padding-left: 12px;
+          padding-right: 12px;
+        }
+
+        .form-card,
+        .result-card {
+          padding: 16px;
+        }
+
+        .expense-row {
+          grid-template-columns: 1fr;
+        }
+
+        .result-card h2 {
+          font-size: 1.2rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header class="header">
+        <h1>Kalkulator UKM</h1>
+      </header>
+
+      <main class="grid">
+        <section class="card form-card">
+          <form id="calculatorForm">
+            <div class="field">
+              <label>Gelas besar</label>
+              <div class="double-input">
+                <div class="input-wrap">
+                  <span>Awal</span>
+                  <input name="gelasBesarAwal" type="number" min="0" value="" placeholder="0" />
+                </div>
+                <div class="input-wrap">
+                  <span>Akhir</span>
+                  <input name="gelasBesarAkhir" type="number" min="0" value="" placeholder="0" />
+                </div>
+              </div>
+              <small class="price-note">Rp 15.000 per pcs</small>
+            </div>
+
+            <div class="field">
+              <label>Gelas kecil</label>
+              <div class="double-input">
+                <div class="input-wrap">
+                  <span>Awal</span>
+                  <input name="gelasKecilAwal" type="number" min="0" value="" placeholder="0" />
+                </div>
+                <div class="input-wrap">
+                  <span>Akhir</span>
+                  <input name="gelasKecilAkhir" type="number" min="0" value="" placeholder="0" />
+                </div>
+              </div>
+              <small class="price-note">Rp 10.000 per pcs</small>
+            </div>
+
+            <div class="field">
+              <label>Sanford</label>
+              <div class="double-input">
+                <div class="input-wrap">
+                  <span>Awal</span>
+                  <input name="sanfordAwal" type="number" min="0" value="" placeholder="0" />
+                </div>
+                <div class="input-wrap">
+                  <span>Akhir</span>
+                  <input name="sanfordAkhir" type="number" min="0" value="" placeholder="0" />
+                </div>
+              </div>
+              <small class="price-note">Rp 5.000 per pcs</small>
+            </div>
+
+            <div class="field">
+              <label>Gelas panas</label>
+              <div class="double-input">
+                <div class="input-wrap">
+                  <span>Awal</span>
+                  <input name="gelasPanasAwal" type="number" min="0" value="" placeholder="0" />
+                </div>
+                <div class="input-wrap">
+                  <span>Akhir</span>
+                  <input name="gelasPanasAkhir" type="number" min="0" value="" placeholder="0" />
+                </div>
+              </div>
+              <small class="price-note">Rp 10.000 per pcs</small>
+            </div>
+
+            <div class="field">
+              <label>Tambahan cup panas</label>
+              <div class="input-wrap">
+                <span>Qty</span>
+                <input name="cupPanas" type="number" min="0" value="" placeholder="0" />
+              </div>
+              <small class="price-note">Tambahan Rp 5.000 per pcs jika memakai gelas besar/kecil</small>
+            </div>
+
+            <div class="field">
+              <label for="qris">QRIS</label>
+              <div class="input-wrap">
+                <span>Rp</span>
+                <input id="qris" name="qris" type="number" min="0" value="" placeholder="0" />
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="deposit">Deposit</label>
+              <div class="input-wrap">
+                <span>Rp</span>
+                <input id="deposit" name="deposit" type="number" min="0" value="" placeholder="0" />
+              </div>
+            </div>
+
+            <div class="field">
+              <label>Pengeluaran</label>
+              <div id="expenseList" class="expense-list"></div>
+              <div class="actions" style="margin-top: 12px;">
+                <button type="button" id="addExpenseBtn" class="btn-secondary">+ Tambah pengeluaran</button>
+              </div>
+            </div>
+
+            <div class="actions">
+              <button type="submit" class="btn-primary">Hitung</button>
+              <button type="reset" class="btn-secondary">Reset</button>
+            </div>
+          </form>
+        </section>
+
+        <aside class="card result-card" id="resultCard">
+          <div class="result-header">
+            <h2>Teh Tarik Malaysia</h2>
+            <span class="date-badge" id="resultDateBadge">Tanggal: -</span>
+          </div>
+
+          <div class="summary">
+            <div class="summary-row">
+              <span>Total penjualan</span>
+              <strong id="total-penjualan">Rp 0</strong>
+            </div>
+
+            <div class="summary-row">
+              <span>Jumlah QRIS</span>
+              <strong id="total-qris">Rp 0</strong>
+            </div>
+
+            <div class="summary-row">
+              <span>Deposit</span>
+              <strong id="total-deposit">Rp 0</strong>
+            </div>
+
+            <div class="summary-row">
+              <span id="pengeluaran-label">Pengeluaran</span>
+              <strong id="total-pengeluaran">Rp 0</strong>
+            </div>
+
+            <div class="expense-detail">
+              <strong>Detail pengeluaran</strong>
+              <span id="expense-detail-text">Belum ada item pengeluaran</span>
+            </div>
+
+            <div class="summary-row total">
+              <span>Uang cash</span>
+              <strong id="uang-cash">Rp 0</strong>
+            </div>
+          </div>
+
+          <div class="item-total-box">
+            <h3>Total penjualan per item</h3>
+            <div id="itemTotalList"></div>
+          </div>
+
+          <div class="stock-list">
+            <h3>Sisa stok</h3>
+            <div id="stockList"></div>
+          </div>
+
+          <div class="result-actions">
+            <button type="button" class="btn-primary download-btn" id="downloadBtn">Download Gambar</button>
+          </div>
+
+        </aside>
+      </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <script>
+      const form = document.getElementById('calculatorForm');
+      const resultCard = document.getElementById('resultCard');
+      const stockList = document.getElementById('stockList');
+      const itemTotalList = document.getElementById('itemTotalList');
+      const pengeluaranLabel = document.getElementById('pengeluaran-label');
+      const expenseDetailText = document.getElementById('expense-detail-text');
+      const expenseList = document.getElementById('expenseList');
+      const addExpenseBtn = document.getElementById('addExpenseBtn');
+      const resultDateBadge = document.getElementById('resultDateBadge');
+
+      function formatDate(date = new Date()) {
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}-${month}-${year}`;
+      }
+
+      function updateDateBadge() {
+        resultDateBadge.textContent = `Tanggal: ${formatDate()}`;
+      }
+
+      function formatRupiah(value) {
+        return new Intl.NumberFormat('id-ID', {
+          style: 'currency',
+          currency: 'IDR',
+          maximumFractionDigits: 0,
+        }).format(value);
+      }
+
+      function addExpenseRow(name = '', amount = 0) {
+        const row = document.createElement('div');
+        row.className = 'expense-row';
+        row.innerHTML = `
+          <div class="input-wrap">
+            <span>Item</span>
+            <input type="text" class="expense-name" value="${name}" placeholder="contoh: gula" />
+          </div>
+          <div class="input-wrap">
+            <span>Rp</span>
+            <input type="number" class="expense-amount" min="0" value="${amount || ''}" placeholder="0" />
+          </div>
+          <button type="button" class="remove-expense">Hapus</button>
+        `;
+
+        row.querySelector('.remove-expense').addEventListener('click', () => {
+          row.remove();
+          calculate();
+        });
+
+        row.querySelectorAll('input').forEach((input) => {
+          input.addEventListener('input', calculate);
+        });
+
+        expenseList.appendChild(row);
+      }
+
+      function getExpenses() {
+        return [...document.querySelectorAll('.expense-row')].map((row) => {
+          const name = row.querySelector('.expense-name').value.trim();
+          const amount = Number(row.querySelector('.expense-amount').value || 0);
+
+          return { name, amount };
+        });
+      }
+
+      function calculate() {
+        updateDateBadge();
+
+        const getNumber = (name) => {
+          const value = form.elements[name]?.value;
+          return value === '' || value === null || value === undefined ? 0 : Number(value);
+        };
+
+        const gelasBesarAwal = getNumber('gelasBesarAwal');
+        const gelasBesarAkhir = getNumber('gelasBesarAkhir');
+        const gelasKecilAwal = getNumber('gelasKecilAwal');
+        const gelasKecilAkhir = getNumber('gelasKecilAkhir');
+        const sanfordAwal = getNumber('sanfordAwal');
+        const sanfordAkhir = getNumber('sanfordAkhir');
+        const gelasPanasAwal = getNumber('gelasPanasAwal');
+        const gelasPanasAkhir = getNumber('gelasPanasAkhir');
+        const cupPanas = getNumber('cupPanas');
+        const qris = getNumber('qris');
+        const deposit = getNumber('deposit');
+
+        const gelasBesarTerjual = Math.max(0, gelasBesarAwal - gelasBesarAkhir);
+        const gelasKecilTerjual = Math.max(0, gelasKecilAwal - gelasKecilAkhir);
+        const sanfordTerjual = Math.max(0, sanfordAwal - sanfordAkhir);
+        const gelasPanasTerjual = Math.max(0, gelasPanasAwal - gelasPanasAkhir);
+
+        const totalPenjualan =
+          gelasBesarTerjual * 15000 +
+          gelasKecilTerjual * 10000 +
+          sanfordTerjual * 5000 +
+          gelasPanasTerjual * 10000 +
+          cupPanas * 5000;
+
+        const expenses = getExpenses();
+        const totalPengeluaran = expenses.reduce((sum, item) => sum + item.amount, 0);
+        const uangCash = totalPenjualan - qris - totalPengeluaran;
+
+        document.getElementById('total-penjualan').textContent = formatRupiah(totalPenjualan);
+        document.getElementById('total-qris').textContent = formatRupiah(qris);
+        document.getElementById('total-deposit').textContent = formatRupiah(deposit);
+        document.getElementById('total-pengeluaran').textContent = formatRupiah(totalPengeluaran);
+        document.getElementById('uang-cash').textContent = formatRupiah(uangCash);
+
+        const itemTotals = [
+          { label: 'Gelas besar', jumlah: gelasBesarTerjual, harga: 15000 },
+          { label: 'Gelas kecil', jumlah: gelasKecilTerjual, harga: 10000 },
+          { label: 'Sanford', jumlah: sanfordTerjual, harga: 5000 },
+          { label: 'Gelas panas', jumlah: gelasPanasTerjual, harga: 10000 },
+          { label: 'Cup panas', jumlah: cupPanas, harga: 5000 },
+        ];
+
+        const itemStocks = [
+          { label: 'Gelas besar', sisa: gelasBesarAkhir },
+          { label: 'Gelas kecil', sisa: gelasKecilAkhir },
+          { label: 'Sanford', sisa: sanfordAkhir },
+          { label: 'Gelas panas', sisa: gelasPanasAkhir },
+        ];
+
+        itemTotalList.innerHTML = itemTotals
+          .map(
+            (item) => `
+              <div class="item-total-row">
+                <span>${item.label} (${item.jumlah} pcs)</span>
+                <strong>${formatRupiah(item.jumlah * item.harga)}</strong>
+              </div>
+            `
+          )
+          .join('');
+
+        stockList.innerHTML = itemStocks
+          .map(
+            (item) => `
+              <div class="stock-item">
+                <span>${item.label}</span>
+                <strong>${item.sisa} pcs</strong>
+              </div>
+            `
+          )
+          .join('');
+
+        pengeluaranLabel.textContent = 'Pengeluaran';
+        expenseDetailText.textContent = expenses.filter((item) => item.name || item.amount > 0).length
+          ? expenses
+              .filter((item) => item.name || item.amount > 0)
+              .map((item) => `${item.name || 'Pengeluaran'}: ${formatRupiah(item.amount)}`)
+              .join(' • ')
+          : 'Belum ada item pengeluaran';
+      }
+
+      addExpenseBtn.addEventListener('click', () => addExpenseRow());
+
+      form.addEventListener('submit', (event) => {
+        event.preventDefault();
+        calculate();
+      });
+
+      form.addEventListener('reset', () => {
+        setTimeout(() => {
+          expenseList.innerHTML = '';
+          addExpenseRow();
+          calculate();
+        }, 0);
+      });
+
+      document.getElementById('downloadBtn').addEventListener('click', async () => {
+        const downloadBtn = document.getElementById('downloadBtn');
+        const originalVisibility = downloadBtn.style.visibility;
+        const originalWidth = resultCard.style.width;
+        const originalHeight = resultCard.style.height;
+        const originalMaxWidth = resultCard.style.maxWidth;
+        const originalMargin = resultCard.style.margin;
+
+        try {
+          downloadBtn.style.visibility = 'hidden';
+          resultCard.style.width = '900px';
+          resultCard.style.height = '1125px';
+          resultCard.style.maxWidth = '100%';
+          resultCard.style.margin = '0 auto';
+
+          const canvas = await html2canvas(resultCard, {
+            backgroundColor: '#f7fbff',
+            scale: 2,
+            useCORS: true,
+          });
+
+          const link = document.createElement('a');
+          link.download = 'hasil-kalkulator-ukm.png';
+          link.href = canvas.toDataURL('image/png');
+          link.click();
+        } finally {
+          downloadBtn.style.visibility = originalVisibility || 'visible';
+          resultCard.style.width = originalWidth;
+          resultCard.style.height = originalHeight;
+          resultCard.style.maxWidth = originalMaxWidth;
+          resultCard.style.margin = originalMargin;
+        }
+      });
+
+      addExpenseRow();
+      calculate();
+    </script>
+  </body>
+</html>
